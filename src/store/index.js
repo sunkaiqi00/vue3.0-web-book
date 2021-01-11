@@ -1,12 +1,10 @@
 import { createStore } from 'vuex'
+import book from './book'
 
-export default createStore({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
+const store = createStore({
   modules: {
+    book
   }
 })
+
+export default store
