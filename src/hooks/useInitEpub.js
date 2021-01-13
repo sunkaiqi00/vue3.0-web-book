@@ -1,7 +1,9 @@
 import Epub from 'epubjs'
 import useBookStore from './useBookStore'
-import { getFontFamily, saveFontFamily, getFontSize, saveFontSize, getTheme, saveTheme } from '@/utils/localStorage'
+import { getFontFamily, saveFontFamily, getFontSize, saveFontSize, getTheme, saveTheme, getLocation } from '@/utils/localStorage'
 import useInitGlobalStyle from '@/hooks/useInitGlobalStyle'
+import useRefreshLocation from '@/hooks/useRefreshLocation'
+import useDisplay from './useDisplay'
 global.ePub = Epub
 const {
   menuVisible,
@@ -15,7 +17,8 @@ const {
   _setCurrentBook,
   _setFontFamilyVisible,
   themesList,
-  _setDefaultTheme
+  _setDefaultTheme,
+  _setBookAvailable
 } = useBookStore()
 
 const useInitEpub = (domId, fileName) => {
@@ -31,14 +34,18 @@ const useInitEpub = (domId, fileName) => {
   // 上一页
   const prevPage = () => {
     if (rendition) {
-      rendition.prev()
+      rendition.prev().then(() => {
+        useRefreshLocation()
+      })
       hideTitleAndMenu()
     }
   }
   // 下一页
   const nextPage = () => {
     if (rendition) {
-      rendition.next()
+      rendition.next().then(() => {
+        useRefreshLocation()
+      })
       hideTitleAndMenu()
     }
   }
@@ -50,7 +57,8 @@ const useInitEpub = (domId, fileName) => {
   }
   // 点击切换 title ，menu菜单
   const toggleTitleAndMenu = () => {
-    _setMenuVisible(!menuVisible.value)
+    const visible = menuVisible.value
+    _setMenuVisible(!visible)
     _setFontFamilyVisible(false)
     if (menuVisible.value) {
       _setSettingVisible(-1)
@@ -90,45 +98,70 @@ const useInitEpub = (domId, fileName) => {
     _setDefaultTheme(currentTheme)
     rendition.themes.select(currentTheme)
   }
-
+  // 手势操作
+  const initGesture = () => {
+  // rendition 监听事件
+    rendition.on('touchstart', e => {
+      touchStartX = e.changedTouches[0].clientX
+      touchStartTime = e.timeStamp
+      e.stopPropagation()
+    })
+    rendition.on('touchend', e => {
+      const offsetX = e.changedTouches[0].clientX - touchStartX
+      const time = e.timeStamp - touchStartTime
+      if (time < 500 && offsetX > 50) {
+        prevPage()
+      } else if (time < 500 && offsetX < -50) {
+        nextPage()
+      } else {
+        toggleTitleAndMenu()
+      }
+      e.stopPropagation()
+    })
+  }
+  // 注入字体
+  const registerFont = () => {
+  // 字体注入
+    rendition.hooks.content.register(content => {
+      Promise.all([
+        content.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/cabin.css`),
+        content.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`),
+        content.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/montserrat.css`),
+        content.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`)
+      ]).then(() => {})
+    })
+  }
+  // 分页
+  const initPageing = () => {
+    return book.ready.then(() => {
+      return book.locations.generate(
+        (750 * (window.innerWidth / 375)) * // 一页750个字
+        (getFontSize(bookFileName.value) / 16)
+      ).then(locations => {
+        // console.log(locations)
+        // 分页完毕 设置电子书加载完毕
+        _setBookAvailable(true)
+        // 分页需要时间 分页完毕 根据阅读章节刷新阅读百分比
+        useRefreshLocation()
+      })
+    })
+  }
   const rendition = book.renderTo(domId, {
     width: window.innerWidth,
     height: window.innerHeight
   })
   // 渲染电子书
-  rendition.display().then(() => {
+  const location = getLocation(bookFileName.value)
+  useDisplay(location, () => {
     initFontFamily()
     initFontSize()
     initTheme()
     // 全局主题切换
     useInitGlobalStyle()
-  })
-  // rendition 监听事件
-  rendition.on('touchstart', e => {
-    touchStartX = e.changedTouches[0].clientX
-    touchStartTime = e.timeStamp
-    e.stopPropagation()
-  })
-  rendition.on('touchend', e => {
-    const offsetX = e.changedTouches[0].clientX - touchStartX
-    const time = e.timeStamp - touchStartTime
-    if (time < 500 && offsetX > 50) {
-      prevPage()
-    } else if (time < 500 && offsetX < -50) {
-      nextPage()
-    } else {
-      toggleTitleAndMenu()
-    }
-    e.stopPropagation()
-  })
-  // 字体注入
-  rendition.hooks.content.register(content => {
-    Promise.all([
-      content.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/cabin.css`),
-      content.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`),
-      content.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/montserrat.css`),
-      content.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`)
-    ]).then(() => {})
+    initGesture()
+    registerFont()
+    initPageing()
+    useRefreshLocation()
   })
 }
 

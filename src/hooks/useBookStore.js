@@ -11,6 +11,9 @@ const useBookStore = () => {
   const fontFamilyVisible = computed(() => store.state.book.fontFamilyVisible)
   const defaultTheme = computed(() => store.state.book.defaultTheme)
   const themesList = computed(() => store.state.book.themeList)
+  const bookAvailable = computed(() => store.state.book.bookAvailable)
+  const progress = computed(() => store.state.book.progress)
+  const section = computed(() => store.state.book.section)
   const _setFileName = (fileName) => {
     return store.dispatch('setFileName', fileName)
   }
@@ -38,6 +41,15 @@ const useBookStore = () => {
   const _setThemeList = (themeList) => {
     store.dispatch('setThemeList', themeList)
   }
+  const _setBookAvailable = (bookAvailable) => {
+    store.dispatch('setBookAvailable', bookAvailable)
+  }
+  const _setProgress = (progress) => {
+    return store.dispatch('setProgress', progress)
+  }
+  const _setSection = section => {
+    return store.dispatch('setSection', section)
+  }
   return {
     bookFileName,
     menuVisible,
@@ -56,7 +68,13 @@ const useBookStore = () => {
     defaultTheme,
     _setDefaultTheme,
     themesList,
-    _setThemeList
+    _setThemeList,
+    bookAvailable,
+    progress,
+    _setProgress,
+    _setBookAvailable,
+    section,
+    _setSection
   }
 }
 

@@ -22,9 +22,6 @@ export default {
         useInitEpub('read', fileName)
       })
     })
-    return {
-      route
-    }
   }
 }
 </script>

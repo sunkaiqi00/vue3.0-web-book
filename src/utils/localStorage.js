@@ -69,7 +69,7 @@ export function saveLanguage(language) {
   return setLocalStorage('language', language)
 }
 
-//
+// 阅读章节
 export function getLocation(fileName) {
   return getBookObject(fileName, 'location')
 }

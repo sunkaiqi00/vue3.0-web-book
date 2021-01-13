@@ -22,6 +22,7 @@
   <ebook-setting-font></ebook-setting-font>
   <ebook-setting-font-popup></ebook-setting-font-popup>
   <ebook-setting-theme></ebook-setting-theme>
+  <ebook-setting-progress></ebook-setting-progress>
 </template>
 
 <script>
@@ -29,8 +30,14 @@ import useBookStore from '@/hooks/useBookStore'
 import EbookSettingFont from './EbookSettingFont.vue'
 import EbookSettingFontPopup from './EbookSettingFontPopup.vue'
 import EbookSettingTheme from './EbookSettingTheme.vue'
+import EbookSettingProgress from './EbookSettingProgress.vue'
 export default {
-  components: { EbookSettingFont, EbookSettingFontPopup, EbookSettingTheme },
+  components: {
+    EbookSettingFont,
+    EbookSettingFontPopup,
+    EbookSettingTheme,
+    EbookSettingProgress
+  },
   name: 'EbookMenu',
   setup() {
     const { menuVisible, settingVisible, _setSettingVisible } = useBookStore()
