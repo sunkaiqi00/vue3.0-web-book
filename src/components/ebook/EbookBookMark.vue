@@ -133,6 +133,7 @@ export default {
         // 没有到达零界值
         markText.value = instance.$t('book.pulldownAddMark')
         markColor.value = GRAY
+        markIsFixed.value = false
         iconArrow.value.style.transform = 'rotate(0)'
       } else if (newOffsetY >= markHeight.value) {
         // 到达零界值
@@ -149,13 +150,12 @@ export default {
     const deleteBookMark = newOffsetY => {
       // 当前页是书签也
       if (newOffsetY > 0 && newOffsetY < markHeight.value) {
-        console.log('a')
         // 没有到达零界值
         markText.value = instance.$t('book.pulldownDeleteMark')
         markColor.value = BLUE
         iconArrow.value.style.transform = 'rotate(0)'
+        markIsFixed.value = true
       } else if (newOffsetY >= markHeight.value) {
-        console.log('b')
         // 到达零界值
         ebookMark.value.style.top = `${-newOffsetY + markHeight.value}px`
         markText.value = instance.$t('book.releaseDeleteMark')
