@@ -14,6 +14,11 @@ const useBookStore = () => {
   const bookAvailable = computed(() => store.state.book.bookAvailable)
   const progress = computed(() => store.state.book.progress)
   const section = computed(() => store.state.book.section)
+  const cover = computed(() => store.state.book.cover)
+  const metadata = computed(() => store.state.book.metadata)
+  const navigation = computed(() => store.state.book.navigation)
+  const offsetY = computed(() => store.state.book.offsetY)
+  const isBookmark = computed(() => store.state.book.isBookmark)
   const _setFileName = (fileName) => {
     return store.dispatch('setFileName', fileName)
   }
@@ -50,6 +55,21 @@ const useBookStore = () => {
   const _setSection = section => {
     return store.dispatch('setSection', section)
   }
+  const _setCover = cover => {
+    return store.dispatch('setCover', cover)
+  }
+  const _setMetadata = metadata => {
+    return store.dispatch('setMetadata', metadata)
+  }
+  const _setNavigation = navigation => {
+    return store.dispatch('setNavigation', navigation)
+  }
+  const _setOffsetY = offsetY => {
+    return store.dispatch('setOffsetY', offsetY)
+  }
+  const _setIsBookmark = isBookmark => {
+    return store.dispatch('setIsBookmark', isBookmark)
+  }
   return {
     bookFileName,
     menuVisible,
@@ -74,7 +94,17 @@ const useBookStore = () => {
     _setProgress,
     _setBookAvailable,
     section,
-    _setSection
+    _setSection,
+    _setCover,
+    _setMetadata,
+    cover,
+    metadata,
+    navigation,
+    _setNavigation,
+    offsetY,
+    _setOffsetY,
+    isBookmark,
+    _setIsBookmark
   }
 }
 

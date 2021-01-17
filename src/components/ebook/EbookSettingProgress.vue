@@ -38,9 +38,10 @@
 
 <script>
 import useBookStore from '@/hooks/useBookStore'
-import { computed, getCurrentInstance, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, getCurrentInstance } from 'vue'
 import useDisplay from '@/hooks/useDisplay'
-import { getReadTime } from '@/utils/localStorage'
+import useGetReadTimeText from '@/hooks/useGetReadTimeText'
+
 export default {
   name: 'EbookSettingProgress',
   setup() {
@@ -53,7 +54,7 @@ export default {
       currentBook,
       section,
       _setSection,
-      bookFileName
+      navigation
     } = useBookStore()
     const { ctx } = getCurrentInstance()
     // 阅读时间
@@ -107,32 +108,27 @@ export default {
     }
     // 获取章节名称
     const getSectionName = computed(() => {
-      if (section.value) {
-        // 通过章节数(第几章)获取章节信息
-        const sectionInfo = currentBook.value.section(section.value)
-        if (sectionInfo && sectionInfo.href) {
-          // 通过当前章节的href获取目录信息   navigation 电子书目录
-          const title = currentBook.value.navigation.get(sectionInfo.href)
-          return `${section.value}. ${title.label}`
-        }
+      // if (section.value) {
+      //   // 通过章节数(第几章)获取章节信息
+      //   const sectionInfo = currentBook.value.section(section.value)
+      //   if (
+      //     sectionInfo &&
+      //     sectionInfo.href &&
+      //     currentBook.value &&
+      //     currentBook.value.navigation
+      //   ) {
+      //     // 通过当前章节的href获取目录信息   navigation 电子书目录
+      //     const title = currentBook.value.navigation.get(sectionInfo.href)
+      //     return `${section.value}. ${title.label}`
+      //   }
+      // }
+      // 通过章节(数) 从目录中获取对应章节的标题
+      if (navigation.value) {
+        return section.value ? navigation.value[section.value].label : ''
       }
     })
-    const getReadTimeText = () => {
-      readTime.value = ctx
-        .$t('book.haveRead')
-        .replace('$1', getReadTimeToMinute())
-    }
-    const getReadTimeToMinute = () => {
-      let readTime = getReadTime(bookFileName.value)
-      if (!readTime) {
-        readTime = 0
-      } else {
-        readTime = Math.ceil(readTime / 60)
-      }
-      return readTime
-    }
     onMounted(() => {
-      getReadTimeText()
+      readTime.value = useGetReadTimeText(ctx)
     })
     return {
       readTime,

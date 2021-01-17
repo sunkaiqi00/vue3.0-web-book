@@ -78,10 +78,10 @@ export function saveLocation(fileName, location) {
 }
 
 // 书签
-export function getBookmark(fileName) {
+export function getBookMark(fileName) {
   return getBookObject(fileName, 'bookmark')
 }
-export function saveBookmark(fileName, bookmark) {
+export function saveBookMark(fileName, bookmark) {
   setBookObject(fileName, 'bookmark', bookmark)
 }
 

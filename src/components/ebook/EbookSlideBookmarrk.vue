@@ -1,0 +1,95 @@
+<template>
+  <div class="ebook-slide-bookmark">
+    <div class="slide-bookmark-title">{{$t('book.bookmark')}} · {{bookmark ? bookmark.length : 0}}</div>
+    <scroll class="slide-bookmark-list" :top="48" :bottom="48">
+      <div
+        class="slide-bookmark-item"
+        v-for="(item, index) in bookmark"
+        :key="index"
+        @click="displayBookmark(item.cfi)"
+      >
+        <div class="slide-bookmark-item-icon">
+          <div class="icon-bookmark"></div>
+        </div>
+        <div class="slide-bookmark-item-text">{{item.text}}</div>
+      </div>
+    </scroll>
+  </div>
+</template>
+
+<script>
+import Scroll from '../common/Scroll.vue'
+import { getBookMark } from '@/utils/localStorage'
+import useBookStore from '@/hooks/useBookStore'
+import useDisplay from '@/hooks/useDisplay'
+import useHideTitleAndMenu from '@/hooks/useHideTitleAndMenu'
+import { onMounted, ref } from 'vue'
+export default {
+  name: 'EbookSlideBookmarrk',
+  components: { Scroll },
+  setup() {
+    const { bookFileName } = useBookStore()
+    const bookmark = ref()
+    onMounted(() => {
+      bookmark.value = getBookMark(bookFileName.value)
+    })
+    const displayBookmark = cfi => {
+      useDisplay(cfi, () => {
+        useHideTitleAndMenu()
+      })
+    }
+    return {
+      bookmark,
+      displayBookmark
+    }
+  }
+}
+</script>
+
+<style lang='scss' scoped>
+@import '@/assets/css/global.scss';
+.ebook-slide-bookmark {
+  width: 100%;
+  .slide-bookmark-title {
+    width: 100%;
+    height: px2rem(48);
+    font-size: px2rem(14);
+    font-weight: bold;
+    padding: 0 px2rem(15);
+    box-sizing: border-box;
+    @include left;
+  }
+  .slide-bookmark-list {
+    padding: 0 px2rem(15);
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .slide-bookmark-item {
+      display: flex;
+      padding: px2rem(15) 0;
+      box-sizing: border-box;
+      .slide-bookmark-item-icon {
+        flex: 0 0 px2rem(29);
+        @include left;
+        .icon-bookmark {
+          width: px2rem(20);
+          height: px2rem(20);
+          font-size: px2rem(12);
+          border-radius: 50%;
+          background: #bbb;
+          @include center;
+        }
+      }
+      .slide-bookmark-item-text {
+        font-size: px2rem(14);
+        line-height: px2rem(15);
+        max-height: px2rem(45);
+        @include ellipsis2(3);
+      }
+    }
+  }
+}
+</style>

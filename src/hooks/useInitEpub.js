@@ -4,7 +4,10 @@ import { getFontFamily, saveFontFamily, getFontSize, saveFontSize, getTheme, sav
 import useInitGlobalStyle from '@/hooks/useInitGlobalStyle'
 import useRefreshLocation from '@/hooks/useRefreshLocation'
 import useDisplay from './useDisplay'
+import useHideTitleAndMenu from './useHideTitleAndMenu'
+import flatten from '@/utils/flattenArray'
 global.ePub = Epub
+
 const {
   menuVisible,
   bookFileName,
@@ -18,7 +21,10 @@ const {
   _setFontFamilyVisible,
   themesList,
   _setDefaultTheme,
-  _setBookAvailable
+  _setBookAvailable,
+  _setCover,
+  _setMetadata,
+  _setNavigation
 } = useBookStore()
 
 const useInitEpub = (domId, fileName) => {
@@ -37,7 +43,7 @@ const useInitEpub = (domId, fileName) => {
       rendition.prev().then(() => {
         useRefreshLocation()
       })
-      hideTitleAndMenu()
+      useHideTitleAndMenu()
     }
   }
   // 下一页
@@ -46,14 +52,8 @@ const useInitEpub = (domId, fileName) => {
       rendition.next().then(() => {
         useRefreshLocation()
       })
-      hideTitleAndMenu()
+      useHideTitleAndMenu()
     }
-  }
-  // 切换页 隐藏
-  const hideTitleAndMenu = () => {
-    _setMenuVisible(false)
-    _setSettingVisible(-1)
-    _setFontFamilyVisible(false)
   }
   // 点击切换 title ，menu菜单
   const toggleTitleAndMenu = () => {
@@ -150,6 +150,34 @@ const useInitEpub = (domId, fileName) => {
     width: window.innerWidth,
     height: window.innerHeight
   })
+  // 获取电子书封面, 书名作者信息, 电子护士目录
+  const parseBook = () => {
+    book.loaded.cover.then(cover => {
+      book.archive.createUrl(cover).then(coverUrl => {
+        _setCover(coverUrl)
+      })
+    })
+    book.loaded.metadata.then((metadata) => {
+      _setMetadata(metadata)
+    })
+    book.loaded.navigation.then(nav => {
+      // 添加level字段 建立之间的关系
+      const find = (item, level = 0) => {
+        return !item.parent
+          ? level
+          : find(
+            navItem.filter((parentItem) => {
+              return parentItem.id === item.parent
+            })[0],
+            ++level
+          )
+      }
+      const navItem = flatten(nav.toc)
+      navItem.forEach(item => { item.level = find(item) })
+      _setNavigation(navItem)
+    })
+  }
+
   // 渲染电子书
   const location = getLocation(bookFileName.value)
   useDisplay(location, () => {
@@ -162,7 +190,14 @@ const useInitEpub = (domId, fileName) => {
     registerFont()
     initPageing()
     useRefreshLocation()
+    parseBook()
   })
+
+  return {
+    prevPage,
+    nextPage,
+    toggleTitleAndMenu
+  }
 }
 
 export default useInitEpub
