@@ -1,24 +1,35 @@
 <template>
   <div class="ebook" ref="ebook">
+    <ebook-header></ebook-header>
     <ebook-title></ebook-title>
     <ebook-reader></ebook-reader>
     <ebook-menu></ebook-menu>
     <ebook-book-mark></ebook-book-mark>
+    <ebook-footer></ebook-footer>
   </div>
 </template>
 
 <script>
 import { onMounted, onBeforeMount, ref, watch } from 'vue'
+import { getReadTime, saveReadTime } from '@/utils/localStorage'
+import useBookStore from '@/hooks/useBookStore'
 import EbookMenu from '../../components/ebook/EbookMenu.vue'
 import EbookReader from '../../components/ebook/EbookReader.vue'
 import EbookTitle from '../../components/ebook/EbookTitle.vue'
-import { getReadTime, saveReadTime } from '@/utils/localStorage'
-import useBookStore from '@/hooks/useBookStore'
 import EbookBookMark from '../../components/ebook/EbookBookMark.vue'
+import EbookHeader from '@/components/ebook/EbookHeader.vue'
+import EbookFooter from '../../components/ebook/EbookFooter.vue'
 
 export default {
   name: 'Ebook',
-  components: { EbookReader, EbookTitle, EbookMenu, EbookBookMark },
+  components: {
+    EbookReader,
+    EbookTitle,
+    EbookMenu,
+    EbookBookMark,
+    EbookHeader,
+    EbookFooter
+  },
   setup() {
     const { bookFileName, offsetY, menuVisible, bookAvailable } = useBookStore()
     const ebook = ref(null)

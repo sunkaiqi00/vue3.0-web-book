@@ -16,7 +16,6 @@
 import { computed, getCurrentInstance, onMounted, ref, watch } from 'vue'
 import BookMark from '../common/BookMark.vue'
 import useBookStore from '@/hooks/useBookStore'
-import { realPx } from '@/utils/utils'
 import { getBookMark, saveBookMark } from '@/utils/localStorage'
 const GRAY = '#bdc3c7'
 const BLUE = '#3498db'
@@ -44,7 +43,7 @@ export default {
     // 书签的高度  零界值
     const markHeight = computed(() => {
       if (mark.value) {
-        return realPx(mark.value.offsetHeight)
+        return mark.value.offsetHeight
       }
     })
     const markFixedStyle = computed(() => {
@@ -52,7 +51,7 @@ export default {
       return {
         position: 'fixed',
         top: 0,
-        height: markHeight.value + 'px'
+        height: mark.value.offsetHeight + 'px'
       }
     })
     // 监听滑动距离 设置书签
@@ -157,6 +156,8 @@ export default {
         markIsFixed.value = true
       } else if (newOffsetY >= markHeight.value) {
         // 到达零界值
+        console.log(newOffsetY, markHeight.value)
+        console.log(-newOffsetY + markHeight.value)
         ebookMark.value.style.top = `${-newOffsetY + markHeight.value}px`
         markText.value = instance.$t('book.releaseDeleteMark')
         markColor.value = GRAY

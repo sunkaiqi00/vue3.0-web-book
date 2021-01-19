@@ -36,7 +36,7 @@ export default {
         e.target.scrollTop || window.pageYOffset || document.body.scrollTop
       ctx.emit('onScroll', offsetY)
     }
-    const scroll = (x, y) => {
+    const scrollTo = (x, y) => {
       scrollWrapper.value.scrollTo(x, y)
     }
     const refresh = () => {
@@ -51,8 +51,9 @@ export default {
     })
     return {
       handleScroll,
-      scroll,
-      scrollWrapper
+      scrollTo,
+      scrollWrapper,
+      refresh
     }
   }
 }
@@ -60,4 +61,18 @@ export default {
 
 <style lang='scss' scoped>
 @import '@/assets/css/global.scss';
+.scroll-wrapper {
+  position: relative;
+  z-index: 100;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  &.no-scroll {
+    overflow: hidden;
+  }
+}
 </style>

@@ -28,7 +28,7 @@
           </div>
         </div>
         <div class="text-wrapper">
-          <span class="progress-section-text">{{getSectionName}}</span>
+          <span class="progress-section-text">{{useGetSectionName}}</span>
           <span class="progress-section-precentage">({{bookAvailable ? progress + '%' : '加载中...'}})</span>
         </div>
       </div>
@@ -38,9 +38,10 @@
 
 <script>
 import useBookStore from '@/hooks/useBookStore'
-import { computed, onMounted, ref, getCurrentInstance } from 'vue'
+import { onMounted, ref, getCurrentInstance } from 'vue'
 import useDisplay from '@/hooks/useDisplay'
 import useGetReadTimeText from '@/hooks/useGetReadTimeText'
+import useGetSectionName from '@/hooks/useGetSectionName'
 
 export default {
   name: 'EbookSettingProgress',
@@ -53,8 +54,7 @@ export default {
       _setProgress,
       currentBook,
       section,
-      _setSection,
-      navigation
+      _setSection
     } = useBookStore()
     const { ctx } = getCurrentInstance()
     // 阅读时间
@@ -106,27 +106,27 @@ export default {
     const onProgressInput = progress => {
       _setProgress(progress)
     }
-    // 获取章节名称
-    const getSectionName = computed(() => {
-      // if (section.value) {
-      //   // 通过章节数(第几章)获取章节信息
-      //   const sectionInfo = currentBook.value.section(section.value)
-      //   if (
-      //     sectionInfo &&
-      //     sectionInfo.href &&
-      //     currentBook.value &&
-      //     currentBook.value.navigation
-      //   ) {
-      //     // 通过当前章节的href获取目录信息   navigation 电子书目录
-      //     const title = currentBook.value.navigation.get(sectionInfo.href)
-      //     return `${section.value}. ${title.label}`
-      //   }
-      // }
-      // 通过章节(数) 从目录中获取对应章节的标题
-      if (navigation.value) {
-        return section.value ? navigation.value[section.value].label : ''
-      }
-    })
+    // // 获取章节名称
+    // const getSectionName = computed(() => {
+    //   // if (section.value) {
+    //   //   // 通过章节数(第几章)获取章节信息
+    //   //   const sectionInfo = currentBook.value.section(section.value)
+    //   //   if (
+    //   //     sectionInfo &&
+    //   //     sectionInfo.href &&
+    //   //     currentBook.value &&
+    //   //     currentBook.value.navigation
+    //   //   ) {
+    //   //     // 通过当前章节的href获取目录信息   navigation 电子书目录
+    //   //     const title = currentBook.value.navigation.get(sectionInfo.href)
+    //   //     return `${section.value}. ${title.label}`
+    //   //   }
+    //   // }
+    //   // 通过章节(数) 从目录中获取对应章节的标题
+    //   if (navigation.value) {
+    //     return section.value ? navigation.value[section.value].label : ''
+    //   }
+    // })
     onMounted(() => {
       readTime.value = useGetReadTimeText(ctx)
     })
@@ -138,9 +138,9 @@ export default {
       nextSection,
       bookAvailable,
       progress,
-      getSectionName,
       onProgressChange,
-      onProgressInput
+      onProgressInput,
+      useGetSectionName
     }
   }
 }

@@ -62,11 +62,6 @@ export default {
   .slide-bookmark-list {
     padding: 0 px2rem(15);
     box-sizing: border-box;
-    overflow-x: hidden;
-    overflow-y: auto;
-    &::-webkit-scrollbar {
-      display: none;
-    }
     .slide-bookmark-item {
       display: flex;
       padding: px2rem(15) 0;

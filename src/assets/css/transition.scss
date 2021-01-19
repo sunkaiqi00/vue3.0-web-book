@@ -1,5 +1,5 @@
-$animationTime: 0.2s;
-$animationType: linear;
+@import './animationConstant.scss';
+@import './global.scss';
 
 .slide-down-enter-from,
 .slide-down-leave-to {
@@ -40,18 +40,39 @@ $animationType: linear;
 .slide-right-enter-to,
 .slide-right-leave-from,
 .title-move-enter-to,
-.title-move-leave,
-.hot-search-move-enter-to,
-.hot-search-move-leave {
+.hot-search-move-leave-from {
   transform: translate3d(0, 0, 0);
 }
-.title-move-enter,
+
+.title-move-enter-to,
+.title-move-leave-from {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+}
+.title-move-enter-from,
 .title-move-leave-to {
   transform: translate3d(0, px2rem(10), 0);
+  opacity: 0;
 }
-.hot-search-move-enter,
+.hot-search-move-enter-from,
 .hot-search-move-leave-to {
   transform: translate3d(0, px2rem(30), 0);
+  opacity: 0;
+}
+.hot-search-move-enter-to,
+.hot-search-move-leave-from {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+}
+.flap-scale-enter-from,
+.flap-scale-leave-to {
+  transform: scale(0);
+  opacity: 0;
+}
+.flap-scale-enter-to,
+.flap-scale-leave-from {
+  transform: scale(1);
+  opacity: 1;
 }
 
 .slide-down-enter-active,
@@ -67,6 +88,8 @@ $animationType: linear;
 .title-move-enter-active,
 .title-move-leave-active,
 .hot-search-move-enter-active,
-.hot-search-move-leave-active {
+.hot-search-move-leave-active,
+.flap-scale-enter-active,
+.flap-scale-leave-active {
   transition: all $animationTime $animationType;
 }

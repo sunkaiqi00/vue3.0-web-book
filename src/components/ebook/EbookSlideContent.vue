@@ -287,11 +287,6 @@ export default {
   .slide-contents-list {
     padding: 0 px2rem(15);
     box-sizing: border-box;
-    overflow-x: hidden;
-    overflow-y: auto;
-    &::-webkit-scrollbar {
-      display: none;
-    }
     .slide-contents-item {
       display: flex;
       padding: px2rem(18) 0;

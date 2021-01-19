@@ -26,7 +26,7 @@ export function themeList(vue) {
         body: {
           color: '#4c5059',
           background: '#cecece',
-          'padding-top': `${realPx(40)}px!important`,
+          'padding-top': `${realPx(40)}px!important`, // 为电子书 body增加上下内边距
           'padding-bottom': `${realPx(40)}px!important`
         }
       }
