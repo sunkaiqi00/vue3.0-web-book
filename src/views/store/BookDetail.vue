@@ -58,10 +58,12 @@
       </div>
     </scroll>
     <div class="bottom-wrapper">
-      <div class="bottom-btn" @click.stop.prevent="readBook()">{{$t('detail.read')}}</div>
+      <div class="bottom-btn" @click.stop.prevent="readBook()">
+        <span>{{$t('detail.read')}}</span>
+      </div>
       <div class="bottom-btn" @click.stop.prevent="addOrRemoveShelf()">
         <span class="icon-check" v-if="inBookShelf"></span>
-        {{inBookShelf ? $t('detail.isAddedToShelf') : $t('detail.addOrRemoveShelf')}}
+        <span>{{inBookShelf ? $t('detail.isAddedToShelf') : $t('detail.addOrRemoveShelf')}}</span>
       </div>
     </div>
     <toast :text="toastText" ref="toastRef"></toast>
@@ -288,9 +290,6 @@ export default {
   width: 100%;
   height: 100%;
   background: white;
-  min-width: 200px;
-  max-width: 640px;
-  margin: 0 auto;
   position: relative;
   .content-wrapper {
     width: 100%;
@@ -381,6 +380,9 @@ export default {
       }
       .icon-check {
         margin-right: px2rem(5);
+      }
+      span {
+        cursor: pointer;
       }
     }
     &.hide-shadow {

@@ -5,7 +5,7 @@
       <div class="setting-progress">
         <div class="read-time-wrapper">
           <span class="read-time-text">{{readTime}}</span>
-          <span class="icon-forward"></span>
+          <span class="icon-forward icon"></span>
         </div>
         <div class="progress-wrapper">
           <div class="progress-icon-wrapper" @click="prevSection">
@@ -24,7 +24,7 @@
             :style="{'background-size':`${progress}% 100% !important`}"
           />
           <div class="progress-icon-wrapper" @click="nextSection">
-            <span class="icon-forward"></span>
+            <span class="icon-forward icon"></span>
           </div>
         </div>
         <div class="text-wrapper">
@@ -189,6 +189,7 @@ export default {
         }
         &::-webkit-slider-thumb {
           -webkit-appearance: none;
+          cursor: pointer;
           height: px2rem(20);
           width: px2rem(20);
           border-radius: 50%;

@@ -5,7 +5,7 @@
     </div>
     <div class="title-right-wrapper">
       <span class="icon-shelf icon" v-if="showShelf" @click="goBookShelf"></span>
-      <span class="icon-share" v-else></span>
+      <span class="icon-share icon" v-else></span>
     </div>
     <div class="title-text" v-if="title">{{title}}</div>
   </div>
@@ -89,5 +89,10 @@ export default {
     color: #333;
     @include center;
   }
+}
+.icon-back,
+.icon-shelf,
+.icon-share {
+  cursor: pointer;
 }
 </style>

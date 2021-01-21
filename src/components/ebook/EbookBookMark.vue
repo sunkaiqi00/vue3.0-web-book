@@ -156,8 +156,6 @@ export default {
         markIsFixed.value = true
       } else if (newOffsetY >= markHeight.value) {
         // 到达零界值
-        console.log(newOffsetY, markHeight.value)
-        console.log(-newOffsetY + markHeight.value)
         ebookMark.value.style.top = `${-newOffsetY + markHeight.value}px`
         markText.value = instance.$t('book.releaseDeleteMark')
         markColor.value = GRAY

@@ -98,8 +98,6 @@ export default {
 .store-home {
   width: 100%;
   height: 100%;
-  min-width: 320px;
-  max-width: 760px;
   margin: 0 auto;
   .banner-wrapper {
     width: 100%;

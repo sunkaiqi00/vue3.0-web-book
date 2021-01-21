@@ -3,17 +3,17 @@
   <transition name="slide-down">
     <div class="title-wrapper" v-show="menuVisible">
       <div class="left">
-        <div class="icon-back" @click="back"></div>
+        <div class="icon-back icon" @click="back"></div>
       </div>
       <div class="right">
         <div class="icon-wrapper">
-          <div class="icon-shelf"></div>
+          <router-link @click.stop to="/store/shelf" class="icon-shelf icon"></router-link>
         </div>
         <div class="icon-wrapper">
-          <div class="icon-cart"></div>
+          <div class="icon-cart icon"></div>
         </div>
         <div class="icon-wrapper">
-          <div class="icon-more"></div>
+          <div class="icon-more icon"></div>
         </div>
       </div>
     </div>
@@ -70,5 +70,8 @@ export default {
       font-size: px2rem(20);
     }
   }
+}
+.icon-shelf {
+  text-decoration: none;
 }
 </style>

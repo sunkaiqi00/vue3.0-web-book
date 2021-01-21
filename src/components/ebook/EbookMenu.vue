@@ -6,16 +6,16 @@
       v-show="menuVisible"
     >
       <div class="icon-wrapper">
-        <div class="icon-menu" @click="showSetting(3)"></div>
+        <div class="icon-menu icon" @click="showSetting(3)"></div>
       </div>
       <div class="icon-wrapper">
-        <div class="icon-progress" @click="showSetting(2)"></div>
+        <div class="icon-progress icon" @click="showSetting(2)"></div>
       </div>
       <div class="icon-wrapper">
-        <div class="icon-bright" @click="showSetting(1)"></div>
+        <div class="icon-bright icon" @click="showSetting(1)"></div>
       </div>
       <div class="icon-wrapper">
-        <div class="icon-A" @click="showSetting(0)"></div>
+        <div class="icon-A icon" @click="showSetting(0)"></div>
       </div>
     </div>
   </transition>

@@ -101,6 +101,7 @@ export default {
         .content-page-tab-item {
           flex: 1;
           font-size: px2rem(12);
+          cursor: pointer;
           @include center;
         }
       }

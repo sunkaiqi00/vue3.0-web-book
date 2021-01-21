@@ -1,3 +1,11 @@
+@mixin max_min_width_abscenter {
+  min-width: 320px;
+  max-width: 760px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
 @mixin center {
   display: flex;
   justify-content: center;

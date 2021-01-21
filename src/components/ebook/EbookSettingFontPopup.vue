@@ -3,7 +3,7 @@
     <div class="ebook-popup-list" v-show="fontFamilyVisible">
       <div class="ebook-popup-title">
         <div class="ebook-popup-title-icon" @click="hide">
-          <span class="icon-down2"></span>
+          <span class="icon-down2 icon"></span>
         </div>
         <span class="ebook-popup-title-text">{{$t('book.selectFont')}}</span>
       </div>
@@ -105,6 +105,7 @@ export default {
       display: flex;
       padding: px2rem(12) px2rem(15);
       color: #95a5a6;
+      cursor: pointer;
       .ebook-popup-item-text {
         flex: 1;
         font-size: px2rem(14);

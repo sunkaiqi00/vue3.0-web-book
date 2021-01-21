@@ -294,8 +294,6 @@ export default {
   height: 100%;
   z-index: 320;
   background: rgba(0, 0, 0, 0.5);
-  max-width: 760px;
-  min-width: 200px;
   @include center;
   .close-btn-wrapper {
     position: absolute;
@@ -457,6 +455,7 @@ export default {
         color: white;
         font-size: px2rem(14);
         background: $color-blue;
+        cursor: pointer;
       }
     }
   }

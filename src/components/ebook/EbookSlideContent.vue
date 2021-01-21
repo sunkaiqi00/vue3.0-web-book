@@ -292,6 +292,7 @@ export default {
       padding: px2rem(18) 0;
       box-sizing: border-box;
       font-size: px2rem(14);
+      cursor: pointer;
       .slide-contents-item-label {
         flex: 1;
         font-size: px2rem(14);

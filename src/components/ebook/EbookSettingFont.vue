@@ -111,6 +111,7 @@ export default {
           flex: 1;
           height: 0;
           border-top: px2rem(1) solid silver;
+          cursor: pointer;
         }
         .point-wrapper {
           position: relative;
@@ -158,6 +159,7 @@ export default {
   .setting-font-family {
     flex: 1;
     font-size: px2rem(14);
+    cursor: pointer;
     @include center;
     .setting-font-family-text-wrapper {
       @include center;

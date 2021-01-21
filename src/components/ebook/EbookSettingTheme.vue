@@ -83,6 +83,7 @@ export default {
         box-sizing: border-box;
         transition: all 0.1s linear;
         box-shadow: 0 0 px2rem(2) rgba(0, 0, 0, 0.1);
+        cursor: pointer;
         &.select-border {
           box-shadow: 0 px2rem(2) px2rem(8) rgba(0, 0, 0, 0.2);
         }

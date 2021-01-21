@@ -82,6 +82,7 @@ export default {
         font-size: px2rem(14);
         line-height: px2rem(15);
         max-height: px2rem(45);
+        cursor: pointer;
         @include ellipsis2(3);
       }
     }

@@ -85,7 +85,6 @@ export default {
       e.preventDefault()
       e.stopPropagation()
     }
-
     const onTouchMove = e => {
       if (startOffsetY) {
         const moveOffsetY = e.changedTouches[0].clientY - startOffsetY
@@ -101,6 +100,7 @@ export default {
         startOffsetY = 0
       })
     }
+
     onMounted(() => {
       // 通过动态路由 获取电子书的分类和书名  存储到store
       const fileName = route.params.fileName.split('|').join('/')
