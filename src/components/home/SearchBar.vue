@@ -39,17 +39,18 @@
 import { ref, watch } from 'vue'
 import useHomeStore from '../../hooks/useHomeStore'
 import HotSearchList from './HotSearchList.vue'
-import { useRouter } from 'vue-router'
-import { saveSearchHistory } from '@/utils/localStorage'
+import { useRoute, useRouter } from 'vue-router'
+import useSaveSearchHistory from '../../hooks/useSaveSearchHistory'
 export default {
   name: 'SearchBar',
   components: { HotSearchList },
   setup() {
     const router = useRouter()
+    const route = useRoute()
     const { offsetY, hotSearchOffsetY, _setFlapCardVisible } = useHomeStore()
     const titleVisible = ref(true)
-    const shadowVisible = ref(false)
     const hotSearchVisible = ref(false)
+    const shadowVisible = ref(false)
     const searcgRef = ref()
     const searchText = ref('')
     const hideTitle = () => {
@@ -78,12 +79,17 @@ export default {
     }
     // 搜索列表返回按钮
     const hideHotSearch = () => {
-      if (!hotSearchVisible.value && titleVisible.value) return
       if (offsetY.value > 0) {
         showShadow()
       } else {
         hideShadow()
         showTitle()
+      }
+      if (!hotSearchVisible.value) {
+        console.log(1)
+        router.push('/store/shelf')
+      } else {
+        hotSearchVisible.value = false
       }
       hideSearch()
       searcgRef.value.reset()
@@ -116,15 +122,12 @@ export default {
             keyword: searchText.value
           }
         })
-        const randomNum = Math.ceil(Math.random() * 2)
-        const searchObj = {
-          type: randomNum,
-          text: searchText.value
-        }
-        saveSearchHistory(searchObj)
+        useSaveSearchHistory(searchText.value)
       }
     }
-
+    watch(route, val => {
+      console.log(val)
+    })
     return {
       searchText,
       searchBook,

@@ -39,7 +39,7 @@ const routes = [
       },
       {
         path: 'shelf',
-        component: () => import('@/views/shelf/StoreShelf.vue')
+        component: () => import('@/views/store/StoreShelf.vue')
       }
       // {
       //   path: 'category',

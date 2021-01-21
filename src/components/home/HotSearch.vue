@@ -2,7 +2,7 @@
   <div>
     <div class="hot-search-title">
       <span class="label">{{label}}</span>
-      <span class="btn" @click="onClick">{{btn}}</span>
+      <span class="btn" @click="onClick" v-if="searchHistory">{{btn}}</span>
     </div>
     <div class="hot-search-list">
       <div class="hot-search-item" v-for="(item, index) in searchHistory" :key="index">
@@ -10,8 +10,8 @@
           <span class="icon-book icon" v-if="item.type === 1"></span>
           <span class="icon-search icon" v-if="item.type === 2"></span>
         </div>
-        <div class="hot-search-text-wrapper">
-          <div class="text" :ref="setSearchText">{{item.text}}</div>
+        <div class="hot-search-text-wrapper" @click="searchKeyword(item.text)">
+          <div class="text">{{item.text}}</div>
           <div class="num" v-if="item.num">{{item.num}}人搜索</div>
         </div>
       </div>
@@ -20,9 +20,6 @@
 </template>
 
 <script>
-import { realPx } from '@/utils/utils'
-import { onMounted, ref } from 'vue'
-
 export default {
   name: 'HotSearch',
   props: {
@@ -30,23 +27,17 @@ export default {
     btn: String,
     searchHistory: Array
   },
-  emits: ['onClick'],
+  emits: ['onClick', 'searchKeyword'],
   setup(props, ctx) {
-    const searchText = ref([])
     const onClick = () => {
       ctx.emit('onClick')
     }
-    const setSearchText = el => {
-      searchText.value.push(el)
+    const searchKeyword = keywod => {
+      ctx.emit('searchKeyword', keywod)
     }
-    onMounted(() => {
-      searchText.value.forEach(item => {
-        item.style.width = window.innerWidth - realPx(20) - realPx(40) + 'px'
-      })
-    })
     return {
-      setSearchText,
-      onClick
+      onClick,
+      searchKeyword
     }
   }
 }
@@ -72,6 +63,7 @@ export default {
     text-align: right;
     font-weight: bold;
     color: #409eff;
+    cursor: pointer;
   }
 }
 .hot-search-list {
@@ -94,6 +86,7 @@ export default {
     .hot-search-text-wrapper {
       flex: 1;
       height: px2rem(35);
+      cursor: pointer;
       @include columnLeft;
       .text {
         flex: 1;

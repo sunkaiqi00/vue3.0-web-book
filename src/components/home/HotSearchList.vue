@@ -12,17 +12,20 @@
         :btn="$t('home.clear')"
         :searchHistory="historySearchList"
         @onClick="removeSearchHistory"
+        @searchKeyword="searchKeyword"
       ></hot-search>
     </scroll>
   </transition>
 </template>
 
 <script>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import useHomeStore from '../../hooks/useHomeStore'
 import Scroll from '@/components/common/Scroll'
 import HotSearch from './HotSearch'
-import { ref } from 'vue'
 import { getSearchHistory, removeLocalStorage } from '@/utils/localStorage'
+import useSaveSearchHistory from '../../hooks/useSaveSearchHistory'
 export default {
   name: 'HotSearchList',
   components: {
@@ -30,9 +33,18 @@ export default {
     HotSearch
   },
   setup() {
+    const router = useRouter()
     const { _setHotSearchOffsetY } = useHomeStore()
     const searchScroll = ref(null)
-
+    const searchKeyword = keyword => {
+      router.push({
+        path: '/store/list',
+        query: {
+          keyword: keyword
+        }
+      })
+      useSaveSearchHistory(keyword)
+    }
     const hotSearchList = [
       {
         type: 1,
@@ -61,7 +73,6 @@ export default {
       }
     ]
     const historySearchList = ref(getSearchHistory())
-
     const onScroll = offsetY => {
       _setHotSearchOffsetY(offsetY)
     }
@@ -79,7 +90,8 @@ export default {
       historySearchList,
       onScroll,
       reset,
-      removeSearchHistory
+      removeSearchHistory,
+      searchKeyword
     }
   }
 }

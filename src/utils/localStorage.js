@@ -134,12 +134,7 @@ export function getBookShelf() {
 }
 
 // 搜索历史
-export function saveSearchHistory(keyword) {
-  let list = getSearchHistory()
-  if (!list) {
-    list = []
-  }
-  list.unshift(keyword)
+export function saveSearchHistory(list) {
   return setLocalStorage('search', list)
 }
 export function getSearchHistory() {
