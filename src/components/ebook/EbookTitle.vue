@@ -22,12 +22,14 @@
 
 <script>
 import useBookStore from '@/hooks/useBookStore'
+import { useRouter } from 'vue-router'
 export default {
   name: 'EbookTitle',
   setup() {
     const { menuVisible } = useBookStore()
+    const router = useRouter()
     const back = () => {
-      console.log('back')
+      router.go(-1)
     }
 
     return {

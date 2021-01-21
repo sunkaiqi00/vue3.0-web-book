@@ -33,6 +33,10 @@ const useInitEpub = (domId, fileName) => {
   const book = new Epub(url)
   // 存储book 到store
   _setCurrentBook(book)
+  const rendition = book.renderTo(domId, {
+    width: window.innerWidth,
+    height: window.innerHeight
+  })
   // 手指点击的位置
   let touchStartX
   // 手指点击的时间
@@ -146,10 +150,7 @@ const useInitEpub = (domId, fileName) => {
       })
     })
   }
-  const rendition = book.renderTo(domId, {
-    width: window.innerWidth,
-    height: window.innerHeight
-  })
+
   // 获取电子书封面, 书名作者信息, 电子护士目录
   const parseBook = () => {
     book.loaded.cover.then(cover => {

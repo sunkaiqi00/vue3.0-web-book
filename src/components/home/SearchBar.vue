@@ -21,7 +21,14 @@
       <div class="search-bar-blank" :class="{'hide-title':!titleVisible}"></div>
       <div class="search-bar-input">
         <span class="icon-search icon"></span>
-        <input type="text" class="input" :placeholder="$t('home.hint')" @focus="showHotSearch" />
+        <input
+          type="text"
+          class="input"
+          :placeholder="$t('home.hint')"
+          @focus="showHotSearch"
+          v-model.trim="searchText"
+          @keyup.enter="searchBook"
+        />
       </div>
     </div>
   </div>
@@ -32,15 +39,19 @@
 import { ref, watch } from 'vue'
 import useHomeStore from '../../hooks/useHomeStore'
 import HotSearchList from './HotSearchList.vue'
+import { useRouter } from 'vue-router'
+import { saveSearchHistory } from '@/utils/localStorage'
 export default {
   name: 'SearchBar',
   components: { HotSearchList },
   setup() {
+    const router = useRouter()
     const { offsetY, hotSearchOffsetY, _setFlapCardVisible } = useHomeStore()
     const titleVisible = ref(true)
     const shadowVisible = ref(false)
     const hotSearchVisible = ref(false)
     const searcgRef = ref()
+    const searchText = ref('')
     const hideTitle = () => {
       titleVisible.value = false
     }
@@ -97,7 +108,26 @@ export default {
         hideShadow()
       }
     })
+    const searchBook = () => {
+      if (searchText.value) {
+        router.push({
+          path: '/store/list',
+          query: {
+            keyword: searchText.value
+          }
+        })
+        const randomNum = Math.ceil(Math.random() * 2)
+        const searchObj = {
+          type: randomNum,
+          text: searchText.value
+        }
+        saveSearchHistory(searchObj)
+      }
+    }
+
     return {
+      searchText,
+      searchBook,
       titleVisible,
       shadowVisible,
       hotSearchVisible,

@@ -138,3 +138,12 @@ body {
     'sans-serif';
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
+.icon {
+  color: #666;
+  font-size: px2rem(16);
+}
+.title {
+  color: #666;
+  font-size: px2rem(16);
+  font-weight: bold;
+}

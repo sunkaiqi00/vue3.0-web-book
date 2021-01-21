@@ -30,6 +30,23 @@
           ></div>
         </div>
       </div>
+      <div
+        class="book-card"
+        :class="{'animation-random': showRandomAnimation}"
+        v-show="showRandomAnimation"
+      >
+        <div class="book-card-wrapper">
+          <div class="img-wrapper">
+            <img class="img" :src="randomBook ? randomBook.cover : ''" />
+          </div>
+          <div class="content-wrapper">
+            <div class="content-title">{{randomBook ? randomBook.title : ''}}</div>
+            <div class="content-author sub-title-medium">{{randomBook ? randomBook.author : ''}}</div>
+            <div class="content-category">{{categoryText()}}</div>
+          </div>
+          <div class="read-btn" @click.stop="showBookDetail(randomBook)">{{$t('home.readNow')}}</div>
+        </div>
+      </div>
       <div class="close-btn-wrapper" @click="closeFlapCard">
         <span class="icon-close"></span>
       </div>
@@ -38,12 +55,19 @@
 </template>
 
 <script>
-import { onMounted, ref, watch } from 'vue'
+import { getCurrentInstance, onMounted, ref, watch } from 'vue'
+import useshowBookDetail from '../../hooks/useshowBookDetail'
 import useHomeStore from '../../hooks/useHomeStore'
 import _flapCardList from '../../utils/flapCard'
+import useGetCategoryText from '../../hooks/useGetCategoryText'
 export default {
   name: 'FlapCard',
-  setup() {
+  props: {
+    randomBook: {
+      type: Object
+    }
+  },
+  setup(props) {
     const { flapCardVisible, _setFlapCardVisible } = useHomeStore()
     const flapCardList = ref(_flapCardList)
     const cardLeft = [] // 左半圆dom集合
@@ -52,12 +76,27 @@ export default {
     const backCard = ref(1) // 后 卡片
     const showFlapCardAnimation = ref(false) // 卡片放大动画显示
     const showPointAnimation = ref(false) // 烟花移动 动画显示
+    const showRandomAnimation = ref(false) // 随机推荐 动画显示
     const pointList = ref([]) // 小球个数
-    let flapCardTimer = null
+    let instance = null
+    let flapCardIntervalTimer = null
+    let runAnimationTimer = null
+    let pointTimer = null
+    let stopFlapCardTimer = null
+    // 获取分类名字
+    const categoryText = () => {
+      return useGetCategoryText(props.randomBook.category, instance)
+    }
+    // 查看电子书详情
+    const showBookDetail = book => {
+      useshowBookDetail(book)
+      _setFlapCardVisible(false)
+      closeFlapCard()
+    }
     watch(flapCardVisible, visible => {
       if (visible) {
         showFlapCardAnimation.value = true
-        setTimeout(() => {
+        runAnimationTimer = setTimeout(() => {
           startFlapCardAnimation()
           pointAnimation()
         }, 300)
@@ -68,13 +107,14 @@ export default {
       _setFlapCardVisible(false)
       showFlapCardAnimation.value = false
       showPointAnimation.value = false
+      showRandomAnimation.value = false
       stopFlapCardAnimation()
     }
     // 烟花动画执行
     const pointAnimation = () => {
       showPointAnimation.value = true
       // 烟花动画执行完毕 清楚动画类样式
-      setTimeout(() => {
+      pointTimer = setTimeout(() => {
         showPointAnimation.value = false
       }, 750)
     }
@@ -82,19 +122,30 @@ export default {
     // 开始卡片旋转动画
     const startFlapCardAnimation = () => {
       prepare()
-      flapCardTimer = setInterval(() => {
+      flapCardIntervalTimer = setInterval(() => {
         flapCardRotate()
       }, 30)
       // 2.5秒 停止卡片动画
-      setTimeout(() => {
+      stopFlapCardTimer = setTimeout(() => {
         stopFlapCardAnimation()
+        showRandomAnimation.value = true
       }, 2500)
     }
     // 停止卡片动画
     const stopFlapCardAnimation = () => {
       showFlapCardAnimation.value = false
-      if (flapCardTimer) {
-        clearInterval(flapCardTimer)
+      // 清除定时器 每次打开 新的
+      if (flapCardIntervalTimer) {
+        clearInterval(flapCardIntervalTimer)
+      }
+      if (runAnimationTimer) {
+        clearTimeout(runAnimationTimer)
+      }
+      if (pointTimer) {
+        clearTimeout(pointTimer)
+      }
+      if (stopFlapCardTimer) {
+        clearTimeout(stopFlapCardTimer)
       }
       resetFlapCard()
     }
@@ -213,6 +264,8 @@ export default {
       for (let i = 0; i < 18; i++) {
         pointList.value.push(`point${i}`)
       }
+      const { ctx } = getCurrentInstance()
+      instance = ctx
     })
     return {
       flapCardVisible,
@@ -223,7 +276,10 @@ export default {
       semiCircleStyle,
       showFlapCardAnimation,
       pointList,
-      showPointAnimation
+      showPointAnimation,
+      showRandomAnimation,
+      categoryText,
+      showBookDetail
     }
   }
 }
@@ -236,9 +292,9 @@ export default {
   @include absCenter;
   width: 100%;
   height: 100%;
-  z-index: 200;
+  z-index: 320;
   background: rgba(0, 0, 0, 0.5);
-  max-width: 640px;
+  max-width: 760px;
   min-width: 200px;
   @include center;
   .close-btn-wrapper {
@@ -260,7 +316,8 @@ export default {
     }
   }
   .flap-card-bg {
-    position: relative;
+    position: absolute;
+    top: 40%;
     width: px2rem(84);
     height: px2rem(84);
     border-radius: px2rem(10);
@@ -328,6 +385,78 @@ export default {
             }
           }
         }
+      }
+    }
+  }
+  .book-card {
+    position: absolute;
+    top: 25%;
+    max-width: px2rem(270);
+    box-sizing: border-box;
+    border-radius: px2rem(15);
+    background: white;
+    &.animation-random {
+      animation: scale 0.3s ease-in both;
+      @keyframes scale {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+    }
+    .book-card-wrapper {
+      width: 100%;
+      height: 100%;
+      margin-bottom: px2rem(30);
+      @include columnTop;
+      .img-wrapper {
+        width: 100%;
+        margin-top: px2rem(20);
+        @include center;
+        .img {
+          width: px2rem(70);
+        }
+      }
+      .content-wrapper {
+        padding: 0 px2rem(20) px2rem(35);
+        margin-top: px2rem(20);
+        .content-title {
+          color: #333;
+          font-weight: bold;
+          font-size: px2rem(14);
+          line-height: px2rem(20);
+          max-height: px2rem(40);
+          text-align: center;
+          @include ellipsis2(2);
+        }
+        .content-author {
+          margin-top: px2rem(10);
+          text-align: center;
+          font-size: px2rem(12);
+        }
+        .content-category {
+          color: #999;
+          font-size: px2rem(12);
+          margin-top: px2rem(10);
+          text-align: center;
+        }
+      }
+      .read-btn {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 1100;
+        width: 100%;
+        border-radius: 0 0 px2rem(15) px2rem(15);
+        padding: px2rem(15) 0;
+        text-align: center;
+        color: white;
+        font-size: px2rem(14);
+        background: $color-blue;
       }
     }
   }

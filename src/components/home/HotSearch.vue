@@ -2,10 +2,10 @@
   <div>
     <div class="hot-search-title">
       <span class="label">{{label}}</span>
-      <span class="btn">{{btn}}</span>
+      <span class="btn" @click="onClick">{{btn}}</span>
     </div>
     <div class="hot-search-list">
-      <div class="hot-search-item" v-for="(item, index) in hotSearch" :key="index">
+      <div class="hot-search-item" v-for="(item, index) in searchHistory" :key="index">
         <div class="icon-wrapper">
           <span class="icon-book icon" v-if="item.type === 1"></span>
           <span class="icon-search icon" v-if="item.type === 2"></span>
@@ -24,13 +24,18 @@ import { realPx } from '@/utils/utils'
 import { onMounted, ref } from 'vue'
 
 export default {
+  name: 'HotSearch',
   props: {
     label: String,
     btn: String,
-    hotSearch: Array
+    searchHistory: Array
   },
-  setup() {
+  emits: ['onClick'],
+  setup(props, ctx) {
     const searchText = ref([])
+    const onClick = () => {
+      ctx.emit('onClick')
+    }
     const setSearchText = el => {
       searchText.value.push(el)
     }
@@ -40,7 +45,8 @@ export default {
       })
     })
     return {
-      setSearchText
+      setSearchText,
+      onClick
     }
   }
 }

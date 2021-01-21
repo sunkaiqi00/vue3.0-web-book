@@ -1,18 +1,9 @@
 @import './minixs.scss';
 @import './animationConstant.scss';
+@import './color.scss';
 
 $ration: 375 / 10;
 
 @function px2rem($px) {
   @return $px / $ration + rem;
-}
-
-.icon {
-  color: #666;
-  font-size: px2rem(16);
-}
-.title {
-  color: #666;
-  font-size: px2rem(16);
-  font-weight: bold;
 }

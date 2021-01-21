@@ -101,7 +101,7 @@ export function saveProgress(fileName, progress) {
   setBookObject(fileName, 'progress', progress)
 }
 
-//
+// 目录
 export function getNavigation(fileName) {
   return getBookObject(fileName, 'navigation')
 }
@@ -109,7 +109,7 @@ export function saveNavigation(fileName, navigation) {
   setBookObject(fileName, 'navigation', navigation)
 }
 
-//
+// 电子书信息
 export function getMetadata(fileName) {
   return getBookObject(fileName, 'metadata')
 }
@@ -117,7 +117,7 @@ export function saveMetadata(fileName, metadata) {
   setBookObject(fileName, 'metadata', metadata)
 }
 
-//
+//  封面
 export function getCover(fileName) {
   return getBookObject(fileName, 'cover')
 }
@@ -125,10 +125,23 @@ export function saveCover(fileName, cover) {
   setBookObject(fileName, 'cover', cover)
 }
 
-//
+// 书架
 export function saveBookShelf(shelf) {
   return setLocalStorage('shelf', shelf)
 }
 export function getBookShelf() {
   return getLocalStorage('shelf')
+}
+
+// 搜索历史
+export function saveSearchHistory(keyword) {
+  let list = getSearchHistory()
+  if (!list) {
+    list = []
+  }
+  list.unshift(keyword)
+  return setLocalStorage('search', list)
+}
+export function getSearchHistory() {
+  return getLocalStorage('search')
 }
