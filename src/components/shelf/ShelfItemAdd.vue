@@ -1,0 +1,28 @@
+<template>
+  <div class="shelf-item-add">
+    <span class="icon-add"></span>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'ShelfItemAdd'
+}
+</script>
+
+<style lang='scss' scoped>
+@import '@/assets/css/global.scss';
+
+.shelf-item-add {
+  width: 100%;
+  height: 100%;
+  border: px2rem(1) solid #ccc;
+  box-sizing: border-box;
+  margin-top: px2rem (-20) !important;
+  @include center;
+  .icon-add {
+    font-size: px2rem(60);
+    color: #ccc;
+  }
+}
+</style>

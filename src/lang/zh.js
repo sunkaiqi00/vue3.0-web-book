@@ -44,6 +44,7 @@ const messages = {
     statistics: '统计学'
   },
   shelf: {
+    noSupportIndexDB: '您的浏览器暂不支持下载',
     title: '书架',
     edit: '编辑',
     cancel: '取消',
@@ -57,7 +58,7 @@ const messages = {
     open: '开启',
     closePrivateTitle: '是否关闭所选书籍的私密阅读？',
     close: '关闭',
-    setPrivateSuccess: '已开启私密阅读<br>阅读记录将不再公开',
+    setPrivateSuccess: '已开启私密阅读，阅读记录将不再公开',
     closePrivateSuccess: '已关闭私密阅读',
     setDownloadTitle: '开启后，将自动缓存所选书籍内容',
     setDownloadSuccess: '已开启，将自动离线已购内容',

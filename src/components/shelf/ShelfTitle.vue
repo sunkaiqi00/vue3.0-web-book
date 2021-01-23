@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { computed, getCurrentInstance, onMounted, ref } from 'vue'
+import { computed, getCurrentInstance, onMounted, ref, watch } from 'vue'
 import useHomeStore from '../../hooks/useHomeStore'
 export default {
   name: 'ShelfTitle',
@@ -42,12 +42,16 @@ export default {
   },
   setup() {
     const {
+      offsetY,
       shelfCategory,
       isEditMode,
       currentType,
-      // eslint-disable-next-line no-unused-vars
       shelfSelected,
-      shelfTitleVisible
+      shelfTitleVisible,
+      _setIsEditMode,
+      _setShelfSelected,
+      _setShelfList,
+      shelfList
     } = useHomeStore()
     const instance = ref(null)
     const ifHideTitleShadow = ref(true) // 隐藏阴影
@@ -90,7 +94,17 @@ export default {
       console.log('clear')
     }
     const onEditClick = () => {
-      console.log('editmode')
+      _setIsEditMode(!isEditMode.value)
+      // 取消编辑  选着数组清空 书架选中状态还原
+      if (!isEditMode.value) {
+        _setShelfSelected([])
+        _setShelfList(
+          shelfList.value.map(item => {
+            item.selected = false
+            return item
+          })
+        )
+      }
     }
     const changeGroup = () => {
       console.log('changegroup')
@@ -98,6 +112,13 @@ export default {
     const back = () => {
       console.log('back')
     }
+    watch(offsetY, y => {
+      if (y > 0) {
+        ifHideTitleShadow.value = false
+      } else {
+        ifHideTitleShadow.value = true
+      }
+    })
     onMounted(() => {
       const { ctx } = getCurrentInstance()
       instance.value = ctx

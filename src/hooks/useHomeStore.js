@@ -28,7 +28,7 @@ const useHomeStore = () => {
     return store.dispatch('setShelfList', list)
   }
   const _setShelfSelected = selected => {
-    return store.dispatch('selected', selected)
+    return store.dispatch('setShelfSelected', selected)
   }
   const _setShelfTitleVisible = visible => {
     return store.dispatch('setShelfTitleVisible', visible)

@@ -35,7 +35,6 @@
               class="book-detail-content-item"
               v-for="(item, index) in flatNavigation"
               :key="index"
-              @click="read(item)"
             >
               <div
                 class="book-detail-content-navigation-text"
@@ -236,9 +235,6 @@ export default {
         marginLeft: (item.deep - 1) * px2rem(20) + 'rem'
       }
     }
-    const read = item => {
-      console.log('read')
-    }
     const readBook = () => {
       router.push({
         path: `/ebook/${categoryText.value}|${fileName.value}`
@@ -275,7 +271,6 @@ export default {
       onScroll,
       back,
       itemStyle,
-      read,
       readBook,
       addOrRemoveShelf
     }

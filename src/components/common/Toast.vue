@@ -3,7 +3,7 @@
     <div class="toast-bg-wrapper" v-if="visible" @click.prevent ref="toast">
       <div class="toast-bg">
         <div class="toast-wrapper">
-          <div class="toast" v-html="showText"></div>
+          <div class="toast">{{text}}</div>
         </div>
       </div>
     </div>
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount, ref } from 'vue'
+import { ref } from 'vue'
 export default {
   name: 'Toast',
   props: {
@@ -22,43 +22,24 @@ export default {
     }
   },
   setup(props) {
-    const toast = ref(null)
     const visible = ref(false)
-    const showText = ref(null)
     let timer = null
+
     const hide = () => {
       visible.value = false
     }
-    const show = () => {
-      updataText(props.text)
-      clearTimeout(timer)
 
+    const show = () => {
+      clearTimeout(timer)
       visible.value = true
       timer = setTimeout(() => {
         visible.value = false
       }, props.timeout)
     }
-    const continueShow = () => {
-      updataText(props.text)
-      clearTimeout(timer)
-      timer = null
-      visible.value = true
-    }
-    const updataText = text => {
-      showText.value = text
-    }
-    onBeforeUnmount(() => {
-      if (toast.value) {
-        toast.value.style.display = 'none'
-      }
-    })
     return {
-      toast,
       visible,
-      showText,
       hide,
-      show,
-      continueShow
+      show
     }
   }
 }

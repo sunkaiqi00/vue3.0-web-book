@@ -44,6 +44,7 @@ const messages = {
     statistics: 'Statistics'
   },
   shelf: {
+    noSupportIndexDB: 'Your browser does not support downloading at this time',
     title: 'Book Shelf',
     edit: 'Edit',
     cancel: 'Cancel',

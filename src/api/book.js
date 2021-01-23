@@ -32,3 +32,7 @@ export function getList() {
     url: `${process.env.VUE_APP_BASE_URL}/book/list`
   })
 }
+
+export function downloadBook() {
+
+}

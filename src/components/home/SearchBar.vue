@@ -39,14 +39,13 @@
 import { ref, watch } from 'vue'
 import useHomeStore from '../../hooks/useHomeStore'
 import HotSearchList from './HotSearchList.vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import useSaveSearchHistory from '../../hooks/useSaveSearchHistory'
 export default {
   name: 'SearchBar',
   components: { HotSearchList },
   setup() {
     const router = useRouter()
-    const route = useRoute()
     const { offsetY, hotSearchOffsetY, _setFlapCardVisible } = useHomeStore()
     const titleVisible = ref(true)
     const hotSearchVisible = ref(false)
@@ -125,9 +124,6 @@ export default {
         useSaveSearchHistory(searchText.value)
       }
     }
-    watch(route, val => {
-      console.log(val)
-    })
     return {
       searchText,
       searchBook,
