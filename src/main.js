@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import i18n from './lang'
 import Mock from './mock'
-import CreateApi from 'vue-create-api'
+// import CreateApi from 'vue-create-api'
 import './assets/css/index.scss'
 
 createApp(App)
@@ -12,5 +12,5 @@ createApp(App)
   .use(router)
   .use(i18n)
   .use(Mock)
-  .use(CreateApi)
+  // .use(CreateApi)
   .mount('#app')

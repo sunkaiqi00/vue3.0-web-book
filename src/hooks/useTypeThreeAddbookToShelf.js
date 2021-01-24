@@ -1,17 +1,20 @@
 const useTypeThreeAddbookToShelf = shelfList => {
+  let list = []
   const typeThree = shelfList.find(item => item.type === 3)
   if (typeThree) {
-    useRemoveAddBookToShelf(shelfList).push({
+    list = useRemoveAddBookToShelf(shelfList)
+    list.push({
       id: -1,
       type: 3
     })
   } else {
-    shelfList.push({
+    list = shelfList
+    list.push({
       id: -1,
       type: 3
     })
   }
-  return shelfList
+  return list
 }
 const useRemoveAddBookToShelf = shelfList => {
   return shelfList.filter(item => item.type !== 3)

@@ -30,15 +30,23 @@
       </div>
     </div>
   </transition>
+  <toast :text="toastText" ref="toastRef"></toast>
 </template>
 
 <script>
 import { computed, getCurrentInstance, onMounted, ref, watch } from 'vue'
+import { clearLocalForage } from '@/utils/localForage'
+import { clearLocalStorage } from '@/utils/localStorage'
 import useHomeStore from '../../hooks/useHomeStore'
+import useTypeThreeAddbookToShelf from '../../hooks/useTypeThreeAddbookToShelf'
+import Toast from '../common/Toast.vue'
 export default {
   name: 'ShelfTitle',
   props: {
     title: String
+  },
+  components: {
+    Toast
   },
   setup() {
     const {
@@ -54,6 +62,8 @@ export default {
       shelfList
     } = useHomeStore()
     const instance = ref(null)
+    const toastText = ref('')
+    const toastRef = ref(null)
     const ifHideTitleShadow = ref(true) // 隐藏阴影
     const emptyCategory = computed(() => {
       return (
@@ -90,8 +100,15 @@ export default {
         }
       }
     })
+    const showToast = text => {
+      toastText.value = text
+      toastRef.value.show()
+    }
     const clearCache = () => {
-      console.log('clear')
+      clearLocalForage()
+      clearLocalStorage()
+      showToast(instance.value.$t('shelf.clearCacheSuccess'))
+      _setShelfList(useTypeThreeAddbookToShelf([]))
     }
     const onEditClick = () => {
       _setIsEditMode(!isEditMode.value)
@@ -138,7 +155,9 @@ export default {
       clearCache,
       onEditClick,
       changeGroup,
-      back
+      back,
+      toastText,
+      toastRef
     }
   }
 }

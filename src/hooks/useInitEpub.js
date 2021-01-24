@@ -27,10 +27,10 @@ const {
   _setNavigation
 } = useBookStore()
 
-const useInitEpub = (domId, fileName) => {
-  const url = `${process.env.VUE_APP_RES_URL}/epub/${fileName}.epub`
+const useInitEpub = (domId, url) => {
   // book对象
   const book = new Epub(url)
+  console.log(book)
   // 存储book 到store
   _setCurrentBook(book)
   const rendition = book.renderTo(domId, {

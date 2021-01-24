@@ -19,18 +19,21 @@
   </div>
   <popup :title="popupTitle" :btn="popupBtn" ref="popupRef"></popup>
   <toast :text="toastText" ref="toastRef"></toast>
+  <shelf-group-dialog ref="groupDialongRef"></shelf-group-dialog>
 </template>
 
 <script>
 import { computed, getCurrentInstance, onMounted, ref } from 'vue'
-import { saveBookShelf } from '@/utils/localStorage'
-import { support } from '@/utils/localForage'
+import { downloadBook } from '@/api/book'
+import { saveBookShelf, removeLocalStorage } from '@/utils/localStorage'
+import { support, removeLocalForage } from '@/utils/localForage'
 import useHomeStore from '../../hooks/useHomeStore'
 import Popup from '../common/Popup.vue'
 import Toast from '../common/Toast.vue'
+import ShelfGroupDialog from './ShelfGroupDialog.vue'
 export default {
   name: 'ShelfFooter',
-  components: { Popup, Toast },
+  components: { Popup, Toast, ShelfGroupDialog },
   setup() {
     const {
       isEditMode,
@@ -41,6 +44,7 @@ export default {
       _setShelfList
     } = useHomeStore()
     const instance = ref(null)
+    const groupDialongRef = ref(null)
     const popupTitle = ref('') // popup title
     const popupBtn = ref([]) // popup btn数组
     const popupRef = ref(null) // popup 组件
@@ -108,7 +112,6 @@ export default {
     const publicReset = () => {
       hidePopup()
       _setIsEditMode(false)
-      saveBookShelf(shelfList.value)
       _setShelfSelected([])
       _setShelfList(
         shelfList.value.map(item => {
@@ -116,6 +119,7 @@ export default {
           return item
         })
       )
+      saveBookShelf(shelfList.value)
     }
     // --------------------------------------------------  私密阅读部分
     // 选中的书是否为私密阅读  图标随着改变
@@ -180,14 +184,53 @@ export default {
     // 下载选中的书
     const downloadSelectedBook = () => {
       for (let i = 0; i < shelfSelected.value.length; i++) {
-        download(shelfSelected.value[i])
+        if (!shelfSelected.value[i].cache) {
+          download(shelfSelected.value[i]).then(books => {
+            books.cache = true
+            showToast(instance.value.$t('shelf.downloadCompleted'))
+          })
+        }
       }
     }
     const download = book => {
-      console.log(book)
+      return new Promise((resolve, reject) => {
+        downloadBook(
+          book,
+          book => {
+            // console.log('下载完毕', book)
+            resolve(book)
+          },
+          err => {
+            console.log(err)
+            reject(err)
+          },
+          progressEvent => {
+            // const progress =
+            //   Math.floor((progressEvent.loaded / progressEvent.total) * 100) +
+            //   '%'
+            // const text = instance.value
+            //   .$t('shelf.progressDownload')
+            //   .replace('$1', `${book.fileName}.epub(${progress})`)
+            // console.log(text)
+          }
+        )
+      })
+    }
+    const removeSelectedCacheBook = () => {
+      for (let i = 0; i < shelfSelected.value.length; i++) {
+        shelfSelected.value[i].cache = false
+        removeCacheBook(shelfSelected.value[i])
+      }
+    }
+    const removeCacheBook = book => {
+      return new Promise((resolve, reject) => {
+        removeLocalStorage(`${book.categoryText}/${book.fileName}`)
+        removeLocalForage(`${book.fileName}`, resolve, reject)
+        resolve(book)
+      })
     }
     // 缓存电子书
-    const setDownload = () => {
+    const setDownload = async () => {
       // 不支持下载
       const supportIndexDB = support()
       if (!supportIndexDB) {
@@ -196,25 +239,18 @@ export default {
         publicReset()
         return
       }
-      // let downloadStatus
-      // if (isDownload.value) {
-      //   downloadStatus = false
-      // } else {
-      //   downloadStatus = true
-      // }
-      // shelfSelected.value.forEach(item => {
-      //   item.cache = downloadStatus
-      // })
-      downloadSelectedBook()
-      // if (downloadStatus) {
-      //   showToast(instance.value.$t('shelf.setDownloadSuccess'))
-      // } else {
-      //   showToast(instance.value.$t('shelf.removeDownloadSuccess'))
-      // }
-      // publicReset()
+
+      if (isDownload.value) {
+        showToast(instance.value.$t('shelf.removeDownloadSuccess'))
+        removeSelectedCacheBook()
+      } else {
+        showToast(instance.value.$t('shelf.setDownloadSuccess'))
+        await downloadSelectedBook()
+      }
+      publicReset()
     }
     // 下载 popup弹出框
-    const shoeDownloadPopup = () => {
+    const showDownloadPopup = () => {
       const title = isDownload.value
         ? instance.value.$t('shelf.removeDownloadTitle')
         : instance.value.$t('shelf.setDownloadTitle')
@@ -243,6 +279,17 @@ export default {
       shelfSelected.value.forEach(book => {
         _setShelfList(shelfList.value.filter(item => item !== book))
       })
+      let text
+      if (shelfSelected.value.length === 1) {
+        text = instance.value
+          .$t('shelf.moveBookOutShelf')
+          .replace('$1', `《${shelfSelected.value[0].title}》`)
+      } else {
+        text = instance.value
+          .$t('shelf.moveBookOutShelf')
+          .replace('$1', instance.value.$t('shelf.selectedBooks'))
+      }
+      showToast(text)
       publicReset()
     }
     // 移除书架 popup弹出层
@@ -274,6 +321,11 @@ export default {
       ]
       showPopup(title, btnList)
     }
+
+    // ------------------------------------------------- 移动分组
+    const showGroupDialong = () => {
+      groupDialongRef.value.show()
+    }
     const onTabClick = item => {
       if (isSelected.value) {
         switch (item.index) {
@@ -281,9 +333,10 @@ export default {
             showPrivatePopup() // 设置是否私密阅读
             break
           case 2:
-            shoeDownloadPopup() // 下再载
+            showDownloadPopup() // 下再载
             break
           case 3:
+            showGroupDialong()
             break
           case 4:
             showRemoveBookPopup()
@@ -309,7 +362,8 @@ export default {
       toastText,
       toastRef,
       isPrivate,
-      label
+      label,
+      groupDialongRef
     }
   }
 }

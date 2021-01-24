@@ -18,6 +18,7 @@ import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import useInitEpub from '@/hooks/useInitEpub'
 import useBookStore from '@/hooks/useBookStore'
+import { getLocalForage } from '@/utils/localForage'
 export default {
   name: 'EbookReader',
   setup() {
@@ -102,18 +103,46 @@ export default {
     }
 
     onMounted(() => {
-      // 通过动态路由 获取电子书的分类和书名  存储到store
-      const fileName = route.params.fileName.split('|').join('/')
-      _setFileName(fileName).then(() => {
-        // 渲染电子书
-        const { prevPage, nextPage, toggleTitleAndMenu } = useInitEpub(
-          'read',
-          fileName
-        )
-        _prevPage = prevPage
-        _nextPage = nextPage
-        _toggleTitleAndMenu = toggleTitleAndMenu
+      let url
+      const bookCategoryAndFilename = route.params.fileName.split('|')
+      const fileName = bookCategoryAndFilename[1]
+      // getLocalForage 听过书名在本地查看是否有缓存(blob)
+      getLocalForage(fileName, (err, book) => {
+        if (!err && book) {
+          // 离线
+          url = book
+        } else {
+          // 在线
+          url = `${
+            process.env.VUE_APP_RES_URL
+          }/epub/${bookCategoryAndFilename.join('/')}.epub`
+        }
+        _setFileName(bookCategoryAndFilename.join('/')).then(() => {
+          // 渲染电子书
+          const { prevPage, nextPage, toggleTitleAndMenu } = useInitEpub(
+            'read',
+            url
+          )
+          _prevPage = prevPage
+          _nextPage = nextPage
+          _toggleTitleAndMenu = toggleTitleAndMenu
+        })
       })
+
+      // 通过动态路由 获取电子书的分类和书名  存储到store
+      // const bookCategoryAndFilename = route.params.fileName.split('|').join('/')
+      // const url = `${process.env.VUE_APP_RES_URL}/epub/${bookCategoryAndFilename}.epub`
+
+      // _setFileName(bookCategoryAndFilename).then(() => {
+      //   // 渲染电子书
+      //   const { prevPage, nextPage, toggleTitleAndMenu } = useInitEpub(
+      //     'read',
+      //     url
+      //   )
+      //   _prevPage = prevPage
+      //   _nextPage = nextPage
+      //   _toggleTitleAndMenu = toggleTitleAndMenu
+      // })
     })
     return {
       onMaskClick,

@@ -1,3 +1,4 @@
+
 <template>
   <div class="store-shelf">
     <shelf-title :title="$t('shelf.title')"></shelf-title>
@@ -16,6 +17,7 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { getShelf } from '@/api/book'
 import { getBookShelf, saveBookShelf } from '@/utils/localStorage'

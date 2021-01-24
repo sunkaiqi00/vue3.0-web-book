@@ -3,7 +3,7 @@
     <div class="toast-bg-wrapper" v-if="visible" @click.prevent ref="toast">
       <div class="toast-bg">
         <div class="toast-wrapper">
-          <div class="toast">{{text}}</div>
+          <div class="toast">{{showText}}</div>
         </div>
       </div>
     </div>
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 export default {
   name: 'Toast',
   props: {
@@ -24,7 +24,7 @@ export default {
   setup(props) {
     const visible = ref(false)
     let timer = null
-
+    const showText = computed(() => props.text)
     const hide = () => {
       visible.value = false
     }
@@ -39,7 +39,8 @@ export default {
     return {
       visible,
       hide,
-      show
+      show,
+      showText
     }
   }
 }
