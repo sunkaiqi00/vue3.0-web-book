@@ -3,7 +3,7 @@
     <transition-group name="list" tag="div" id="shelf-list">
       <div
         class="shelf-list-item-wrapper"
-        v-for="item in shelfList"
+        v-for="item in bookList"
         :key="item.id"
         :class="{'f-start':item.type===3}"
       >
@@ -20,7 +20,6 @@
 
 <script>
 import { computed } from 'vue'
-import useHomeStore from '../../hooks/useHomeStore'
 import { px2rem } from '@/utils/utils'
 import ShelfItem from './ShelfItem.vue'
 export default {
@@ -29,16 +28,16 @@ export default {
     top: {
       type: Number,
       default: 94
-    }
+    },
+    bookList: Array
   },
   components: {
     ShelfItem
   },
   setup(props) {
-    const { shelfList } = useHomeStore()
     const shelfListTop = computed(() => px2rem(props.top) + 'rem')
+
     return {
-      shelfList,
       shelfListTop
     }
   }

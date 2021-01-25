@@ -10,7 +10,7 @@
           v-if="(item.edit === 2 && isInGroup) || item.edit !== 2 || !item.edit"
         >
           <div class="dialog-list-item-text">{{item.title}}</div>
-          <div class="dialog-list-icon-wrapper" v-if="isInGroup">
+          <div class="dialog-list-icon-wrapper" v-if="shelfCategory.id === item.id && isInGroup">
             <span class="icon-check"></span>
           </div>
         </div>
@@ -50,43 +50,50 @@
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
-
 import { saveBookShelf } from '@/utils/localStorage'
 import useTypeThreeAddbookToShelf from '../../hooks/useTypeThreeAddbookToShelf'
-import { computed, getCurrentInstance, onMounted, ref } from 'vue'
+import { computed, getCurrentInstance, onMounted, ref, watch } from 'vue'
+import useComputedId from '../../hooks/useComputedId'
 import useHomeStore from '../../hooks/useHomeStore'
 import EbookDialog from '@/components/common/Dialog'
 import Toast from '../common/Toast.vue'
 
 export default {
   name: 'ShelfGroupDialog',
-  components: {
-    EbookDialog,
-    Toast
-  },
   props: {
     showNewGroup: {
       type: Boolean,
       default: false
     },
-    groupName: String
+    groupName: {
+      type: String,
+      default: ''
+    }
+  },
+  components: {
+    EbookDialog,
+    Toast
   },
   setup(props) {
-    // eslint-disable-next-line comma-spacing
     const {
       currentType,
       shelfList,
       _setIsEditMode,
       shelfSelected,
       _setShelfList,
-      _setShelfSelected
+      _setShelfSelected,
+      shelfCategory
     } = useHomeStore()
     const toastText = ref('') // toast 提示信息
     const toastRef = ref(null) // toast 组件
     const dialongRef = ref(null)
     const instance = ref(null)
     const ifNewGroup = ref(false)
+    const isNew = computed(() => props.showNewGroup)
+    watch(isNew, val => {
+      ifNewGroup.value = val
+    })
+
     const newGroupName = ref('')
     const category = ref()
     const categoryList = ref()
@@ -125,14 +132,24 @@ export default {
       _setIsEditMode(false)
       _setShelfSelected([])
       _setShelfList(
-        shelfList.value.map(item => {
+        shelfList.value.forEach(item => {
           item.selected = false
+          if (item.itemList) {
+            item.itemList.forEach(item => {
+              item.selected = false
+            })
+          }
           return item
         })
       )
     }
     const show = () => {
-      dialongRef.value.show()
+      if (props.groupName) {
+        newGroupName.value = props.groupName
+      }
+      setTimeout(() => {
+        dialongRef.value.show()
+      }, 17)
     }
     const hide = () => {
       dialongRef.value.hide()
@@ -149,7 +166,7 @@ export default {
         ifNewGroup.value = true
       } else if (item.edit && item.edit === 2) {
         // 移出分组
-        console.log(item)
+        moveOutFromGroup()
       } else {
         // 移入某个分组
         selectedBookMoveToCategoryGroup(item)
@@ -182,25 +199,47 @@ export default {
       })
     }
     // 移除分组
-    const moveOutFromGroup = item => {
-      console.log(item)
+    const moveOutFromGroup = () => {
+      _setShelfList(
+        shelfList.value.map(book => {
+          if (book.type === 2 && book.itemList) {
+            book.itemList = book.itemList.filter(subBook => !subBook.selected)
+          }
+          return book
+        })
+      ).then(() => {
+        let list = [].concat(shelfList.value, ...shelfSelected.value)
+        list = useTypeThreeAddbookToShelf(list)
+        list = useComputedId(list)
+        _setShelfList(list).then(() => {
+          showToast(instance.value.$t('shelf.moveBookOutSuccess'))
+          publicReset()
+        })
+      })
     }
     // 创建分组
     const createNewGroup = () => {
       if (!newGroupName.value || newGroupName.value.length === 0) return
-      const group = {
-        id: shelfList.value[shelfList.value.length - 2].id + 1,
-        itemList: [],
-        selected: false,
-        title: newGroupName.value,
-        type: 2
+      if (props.showNewGroup) {
+        shelfCategory.value.title = newGroupName.value
+        _setShelfList(shelfList.value)
+        publicReset()
+      } else {
+        const group = {
+          id: shelfList.value[shelfList.value.length - 2].id + 1,
+          itemList: [],
+          selected: false,
+          title: newGroupName.value,
+          type: 2
+        }
+        let list = shelfList.value
+        list.push(group)
+        list = useTypeThreeAddbookToShelf(list)
+        _setShelfList(list)
+        selectedBookMoveToCategoryGroup(group)
+        initData()
+        publicReset()
       }
-      let list = shelfList.value
-      list.push(group)
-      list = useTypeThreeAddbookToShelf(list)
-      _setShelfList(list)
-      selectedBookMoveToCategoryGroup(group)
-      initData()
     }
     onMounted(() => {
       const { ctx } = getCurrentInstance()
@@ -222,7 +261,8 @@ export default {
       show,
       createNewGroup,
       toastText,
-      toastRef
+      toastRef,
+      shelfCategory
     }
   }
 }

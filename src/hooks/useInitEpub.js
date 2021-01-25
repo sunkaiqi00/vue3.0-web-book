@@ -30,7 +30,6 @@ const {
 const useInitEpub = (domId, url) => {
   // book对象
   const book = new Epub(url)
-  console.log(book)
   // 存储book 到store
   _setCurrentBook(book)
   const rendition = book.renderTo(domId, {

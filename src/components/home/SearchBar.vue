@@ -85,7 +85,6 @@ export default {
         showTitle()
       }
       if (!hotSearchVisible.value) {
-        console.log(1)
         router.push('/store/shelf')
       } else {
         hotSearchVisible.value = false

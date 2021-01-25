@@ -277,7 +277,14 @@ export default {
     // 选中的书 移除书架
     const removeSelectedBook = () => {
       shelfSelected.value.forEach(book => {
-        _setShelfList(shelfList.value.filter(item => item !== book))
+        _setShelfList(
+          shelfList.value.filter(item => {
+            if (item.itemList) {
+              item.itemList = item.itemList.filter(item => item !== book)
+            }
+            return item !== book
+          })
+        )
       })
       let text
       if (shelfSelected.value.length === 1) {

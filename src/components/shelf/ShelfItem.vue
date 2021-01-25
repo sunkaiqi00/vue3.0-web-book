@@ -1,4 +1,3 @@
-
 <template>
   <div
     class="shelf-item"
@@ -33,7 +32,6 @@ export default {
   },
   setup(props) {
     const router = useRouter()
-    // eslint-disable-next-line no-unused-vars
     const { isEditMode, shelfSelected, _setShelfSelected } = useHomeStore()
     const bookObj = ref(props.data) // 书架每一本书或一个分类的信息
     const BookImage = ShelfItemBook // ShelfItemBook 组件
@@ -68,7 +66,12 @@ export default {
         if (bookObj.value.type === 1) {
           useshowBookDetail(bookObj.value)
         } else if (bookObj.value.type === 2) {
-          console.log(bookObj.value)
+          router.push({
+            path: '/store/category',
+            query: {
+              title: props.data.title
+            }
+          })
         } else {
           router.push('/store/home')
         }

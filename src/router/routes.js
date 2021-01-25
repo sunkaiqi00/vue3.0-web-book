@@ -39,14 +39,14 @@ const routes = [
       },
       {
         path: 'shelf',
+        name: 'shelf',
         component: () => import('@/views/store/StoreShelf.vue')
+      },
+      {
+        path: 'category',
+        name: 'storecategory',
+        component: () => import('@/views/store/StoreCategory.vue')
       }
-      // {
-      //   path: 'category',
-      //   name:'storecategory',
-      //   component: () => import('@/views/store/StoreCategory.vue')
-
-      // }
     ]
   }
 ]

@@ -57,10 +57,10 @@
       </div>
     </scroll>
     <div class="bottom-wrapper">
-      <div class="bottom-btn" @click.stop.prevent="readBook()">
+      <div class="bottom-btn" @click.stop.prevent="readBook">
         <span>{{$t('detail.read')}}</span>
       </div>
-      <div class="bottom-btn" @click.stop.prevent="addOrRemoveShelf()">
+      <div class="bottom-btn" @click.stop.prevent="addOrRemoveShelf">
         <span class="icon-check" v-if="inBookShelf"></span>
         <span>{{inBookShelf ? $t('detail.isAddedToShelf') : $t('detail.addOrRemoveShelf')}}</span>
       </div>
@@ -70,16 +70,20 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getBookDetail } from '../../api/book'
 import { px2rem } from '@/utils/utils'
+import { getBookShelf, saveBookShelf } from '../../utils/localStorage'
+import useTypeThreeAddbookToShelf from '../../hooks/useTypeThreeAddbookToShelf'
 import Epub from 'epubjs'
 import DetailTitle from '@/components/detail/DetaiTitle'
 import BookInfo from '@/components/detail/BookInfo'
 import Scroll from '@/components/common/Scroll'
 import Toast from '@/components/common/Toast'
 import useGetCategoryName from '../../hooks/useGetCategoryName'
+import useHomeStore from '../../hooks/useHomeStore'
 global.ePub = Epub
 export default {
   name: 'BookDetail',
@@ -90,6 +94,7 @@ export default {
     Toast
   },
   setup() {
+    const { shelfList, _setShelfList } = useHomeStore()
     const route = useRoute()
     const router = useRouter()
     // ------
@@ -135,8 +140,7 @@ export default {
     const categoryText = ref('')
     const title = ref('')
     const author = ref('')
-    const inBookShelf = computed(() => false)
-
+    const inBookShelf = ref(false)
     const display = href => {
       if (previewRef.value) {
         if (!rendition.value) {
@@ -182,11 +186,11 @@ export default {
         }
       })
     }
-    const init = () => {
+    const init = async () => {
       fileName.value = route.query.fileName
       category.value = route.query.category
       if (fileName.value) {
-        getBookDetail({
+        await getBookDetail({
           fileName: fileName.value
         }).then(response => {
           if (
@@ -207,6 +211,24 @@ export default {
             showToast(response.data.msg)
           }
         })
+      }
+      const shelf = getShelf()
+      if (shelf.length === 1) {
+        inBookShelf.value = false
+      } else {
+        const book = shelf.find(item => {
+          if (item.itemList) {
+            return item.itemList.find(
+              item => item.title === bookItem.value.ttile
+            )
+          }
+          return item.title === bookItem.value.title
+        })
+        if (book) {
+          inBookShelf.value = true
+        } else {
+          inBookShelf.value = false
+        }
       }
     }
     const onScroll = offsetY => {
@@ -244,8 +266,44 @@ export default {
       toastText.value = text
       toastRef.value.show()
     }
+    const getShelf = () => {
+      let shelf = getBookShelf()
+      if (!shelf) {
+        shelf = useTypeThreeAddbookToShelf([])
+      }
+      return shelf
+    }
+    const removeFromBookShelf = (book, shelf) => {
+      console.log(shelf)
+      const list = shelf.filter(item => {
+        if (item.itemList) {
+          item.itemList = item.itemList.filter(
+            item => item.bookId !== book.bookId
+          )
+        }
+        return item.bookId !== book.bookId
+      })
+      console.log(list)
+      _setShelfList(list).then(() => {
+        saveBookShelf(shelfList.value)
+        inBookShelf.value = false
+      })
+    }
+    const addToShelf = (book, shelf) => {
+      book.type = 1
+      shelf.push(book)
+      _setShelfList(useTypeThreeAddbookToShelf(shelf)).then(() => {
+        saveBookShelf(shelfList.value)
+        inBookShelf.value = true
+      })
+    }
     const addOrRemoveShelf = () => {
-      console.log('addOrRemoveShelf')
+      const shelf = getShelf()
+      if (inBookShelf.value) {
+        removeFromBookShelf(bookItem.value, shelf)
+      } else {
+        addToShelf(bookItem.value, shelf)
+      }
     }
     onMounted(() => {
       init()
